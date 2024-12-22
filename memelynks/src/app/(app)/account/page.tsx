@@ -8,17 +8,22 @@ import PageButtonsForm from "@/components/forms/PageButtonsForm";
 import PageLinksForm from "@/components/forms/PageLinksForm";
 import UsernameForm from "@/components/forms/UsernameForm";
 
+export const dynamic = "force-dynamic";
+
+// Adjusted type for searchParams
 interface AccountPageProps {
-  searchParams?: Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>;
+  searchParams?:
+    | Promise<Record<string, string | string[] | undefined>>
+    | undefined;
 }
 
 export default async function AccountPage({ searchParams }: AccountPageProps) {
-  const resolvedSearchParams = await searchParams;
-  const desiredUsername =
-    typeof resolvedSearchParams === "object" && resolvedSearchParams
-      ? (resolvedSearchParams.desiredUsername as string | undefined)
-      : undefined;
+  // Resolve searchParams if it's a promise
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
 
+  const desiredUsername = resolvedSearchParams?.desiredUsername as
+    | string
+    | undefined;
   const session = await auth();
 
   if (!session) {
