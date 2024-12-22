@@ -9,11 +9,16 @@ import mongoose from "mongoose";
 import Link from "next/link";
 import { adapter } from "@/lib/adapter";
 import ClientSideLink from "@/components/ClientSideLink";
-import { buttonLink, findButtonByKey, generateLinearGradient, upperFirst } from "@/lib/utils";
+import {
+  buttonLink,
+  findButtonByKey,
+  generateLinearGradient,
+  upperFirst,
+} from "@/lib/utils";
 // import User from "@/lib/models/UserSchema";
 
 type UserPageProps = {
-  params: { uri: string };
+  params: Promise<{ uri: string }>; // Change params to match the expected type
 };
 
 type Link = {
