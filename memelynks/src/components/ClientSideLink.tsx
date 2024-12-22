@@ -1,8 +1,8 @@
 "use client";
 
+import { generateLinearGradient } from "@/lib/utils";
 import Image from "next/image";
 import { FaLink } from "react-icons/fa";
-import { generateLinearGradient } from "@/app/(page)/[uri]/page";
 
 type LinkProps = {
   link: {
