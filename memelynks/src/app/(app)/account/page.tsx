@@ -9,18 +9,22 @@ import PageLinksForm from "@/components/forms/PageLinksForm";
 import UsernameForm from "@/components/forms/UsernameForm";
 
 interface AccountPageProps {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function AccountPage({ searchParams }: AccountPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const desiredUsername =
+    typeof resolvedSearchParams === "object" && resolvedSearchParams
+      ? (resolvedSearchParams.desiredUsername as string | undefined)
+      : undefined;
+
   const session = await auth();
 
   if (!session) {
     redirect("/");
     return null;
   }
-
-  const desiredUsername = searchParams?.desiredUsername as string | undefined;
 
   try {
     await mongoose.connect(process.env.MONGODB_URI!);
