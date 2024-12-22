@@ -1,42 +1,35 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { LOGIN, PROTECTED_SUB_ROUTES, PUBLIC_ROUTES, ROOT } from "./lib/routes";
+// `middleware.ts`
+import { NextResponse, NextRequest } from "next/server";
+import authConfig from "@/auth.config"; // No database adapter for edge
+import NextAuth from "next-auth";
 
-// Middleware to protect routes
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const { auth } = NextAuth(authConfig);
 
-  // Check if the route is public
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
 
-  // Fetch the session to check authentication status
-  const sessionResponse = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/auth/session`,
-    {
-      headers: { cookie: request.headers.get("cookie") || "" },
-    }
-  );
-  const session = await sessionResponse.json();
-  const isAuthenticated = !!session?.user;
+export default async function middleware(req: NextRequest) {
+  const reqUrl = new URL(req.url);
 
-  // Redirect to "/account" if logged in and visiting "/login"
-  if (pathname === LOGIN && isAuthenticated) {
-    return NextResponse.redirect(new URL("/account", request.url));
+  // Authenticate using NextAuth
+  const session = await auth();
+
+  // Redirect to login if not authenticated and not on the homepage
+  if (!session && reqUrl?.pathname !== "/" && reqUrl?.pathname !== "/login") {
+    return NextResponse.redirect(
+      new URL(
+        `/login?callbackUrl=${encodeURIComponent(reqUrl.pathname)}`,
+        req.url
+      )
+    );
   }
 
-  // Redirect to "/login" if accessing protected routes while not authenticated
-  const isProtectedRoute = PROTECTED_SUB_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
-  if (isProtectedRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL(LOGIN, request.url));
+  // Redirect to account if authenticated and visiting the login page
+  if (session && reqUrl?.pathname === "/login") {
+    return NextResponse.redirect(new URL("/account", req.url));
   }
 
-  // Allow access to public routes and authenticated users on protected routes
+  // Allow access to all other routes
   return NextResponse.next();
 }
-
-// Match all routes for this middleware
-export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
-};

@@ -58,8 +58,8 @@ export default async function UserPage({ params }: UserPageProps) {
         <TickerColumn
           text={
             page.uri.startsWith("$")
-              ? upperFirst(page.uri)
-              : upperFirst(`$${page.uri}`)
+              ? `${upperFirst(page.uri.replace("$", ""))}`
+              : `$${upperFirst(page.uri)}`
           }
           fontSize={7}
           glowColor={page.memeColor}
