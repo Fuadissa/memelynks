@@ -17,9 +17,11 @@ import {
 } from "@/lib/utils";
 // import User from "@/lib/models/UserSchema";
 
-type UserPageProps = {
-  params: Promise<{ uri: string }>; // Change params to match the expected type
-};
+interface UserPageProps {
+  params: {
+    uri: string;
+  };
+}
 
 type Link = {
   id: string;
@@ -31,7 +33,7 @@ type Link = {
 };
 
 export default async function UserPage({ params }: UserPageProps) {
-  const uri = params.uri;
+  const { uri } = params;
   await mongoose.connect(process.env.MONGODB_URI || "");
   const page = await Page.findOne({ uri });
 
