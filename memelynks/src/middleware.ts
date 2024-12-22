@@ -8,14 +8,14 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if the route is public
-  const isPublicRoute =
-    PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
-    pathname === ROOT;
 
   // Fetch the session to check authentication status
-  const sessionResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/session`, {
-    headers: { cookie: request.headers.get("cookie") || "" },
-  });
+  const sessionResponse = await fetch(
+    `${process.env.NEXTAUTH_URL}/api/auth/session`,
+    {
+      headers: { cookie: request.headers.get("cookie") || "" },
+    }
+  );
   const session = await sessionResponse.json();
   const isAuthenticated = !!session?.user;
 
