@@ -60,35 +60,43 @@ export default function PageLinksForm({ page, user }: PageLinksFormProps) {
   function handleUpload(
     ev: ChangeEvent<HTMLInputElement>,
     linkKeyForUpload: string
-  ) {
-    if (ev.target.files && ev.target.files[0]) {
-      const file = ev.target.files[0];
+  ): void {
+    const file = ev.target.files?.[0];
+    if (!file) return;
 
-      // Show loading toast
-      const loadingToast = toast.loading("Uploading image...");
-
-      // Call uploadToCloudinary utility and handle success/error
-      uploadToCloudinary(file)
-        .then((uploadedImageUrl) => {
-          setLinks((prevLinks) =>
-            prevLinks.map((link) =>
-              link.key === linkKeyForUpload
-                ? { ...link, icon: uploadedImageUrl }
-                : link
-            )
-          );
-          // Show success toast after upload completes
-          toast.success("Image uploaded successfully!");
-        })
-        .catch(() => {
-          // Show error toast if upload fails
-          toast.error("Failed to upload image");
-        })
-        .finally(() => {
-          // Dismiss the loading toast after upload completes (success or failure)
-          toast.dismiss(loadingToast);
-        });
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload a valid image file.");
+      return;
     }
+
+    // Show loading toast
+    const loadingToast = toast.loading("Uploading image...");
+
+    uploadToCloudinary(file)
+      .then((uploadedImageUrl) => {
+        // Update the state with the uploaded image URL
+        setLinks((prevLinks) =>
+          prevLinks.map((link) =>
+            link.key === linkKeyForUpload
+              ? { ...link, icon: uploadedImageUrl }
+              : link
+          )
+        );
+
+        // Show success toast
+        toast.success("Image uploaded successfully!");
+      })
+      .catch((error) => {
+        console.error("Error uploading image:", error);
+        // Show error toast
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image."
+        );
+      })
+      .finally(() => {
+        // Dismiss loading toast
+        toast.dismiss(loadingToast);
+      });
   }
 
   function handleLinkChange(

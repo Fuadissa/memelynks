@@ -60,28 +60,28 @@ export default function PageSettingsForm({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Show loading toast
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload a valid image file.");
+      return;
+    }
+
     const loadingToast = toast.loading("Uploading image...");
 
     try {
-      // Upload image to Cloudinary
       const uploadedImageUrl = await uploadToCloudinary(file);
-
-      // Update form data with the uploaded image URL
       updateFormData(key, uploadedImageUrl);
 
-      // Show success toast
       toast.success(
         `${
           key === "bgImage" ? "Background" : "Avatar"
         } image uploaded successfully!`
       );
     } catch (error) {
-      console.log("Error uploading file:", error);
-      // Show error toast
-      toast.error("Failed to upload image.");
+      console.error("Error uploading file:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload image."
+      );
     } finally {
-      // Dismiss loading toast
       toast.dismiss(loadingToast);
     }
   };

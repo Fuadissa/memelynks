@@ -1,44 +1,34 @@
-"use server";
-
-import { v2 as cloudinary } from "cloudinary";
-import { Readable } from "stream";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "", // Replace with your Cloudinary cloud name
-  api_key: process.env.CLOUDINARY_API_KEY || "", // Replace with your Cloudinary API key
-  api_secret: process.env.CLOUDINARY_API_SECRET || "", // Replace with your Cloudinary API secret
-});
-
 export async function uploadToCloudinary(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Convert File to Buffer using slice method
-    const blobSlice = file.slice(0, file.size);
-    const bufferReader = new Response(blobSlice).arrayBuffer();
-
-    bufferReader
-      .then((buffer) => {
-        const reader = new Readable();
-        reader.push(Buffer.from(buffer)); // push the buffer into the stream
-        reader.push(null); // signal end of stream
-
-        // Upload the buffer to Cloudinary using stream
-        const uploadStream = cloudinary.uploader.upload_stream(
-          { resource_type: "image" },
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else if (result && result.secure_url) {
-              resolve(result.secure_url);
-            } else {
-              reject(new Error("Invalid upload result"));
-            }
-          }
-        );
-
-        reader.pipe(uploadStream);
-      })
-      .catch(reject);
+  // Convert file to Base64
+  const reader = new FileReader();
+  const fileBase64 = await new Promise<string>((resolve, reject) => {
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
-}
 
-// export default cloudinary;
+  const base64Data = fileBase64.split(",")[1];
+
+  // Send the Base64 file to the API route
+  const response = await fetch("/api/upload", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ file: base64Data }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Error response:", errorData); // Log the error
+    throw new Error(errorData.error || "Failed to upload image");
+  }
+
+  const responseData = await response.json();
+  if (!responseData.secureUrl) {
+    console.error("Unexpected response format:", responseData); // Log unexpected response
+    throw new Error("Unexpected response format from the server.");
+  }
+
+  return responseData.secureUrl;
+}
