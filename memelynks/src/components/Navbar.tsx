@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function Navbar({
   page,
 }: {
-  page: { buttons?: Record<string, string> | null };
+  page: { buttons?: Record<string, string> | null; memeColor?: string };
 }) {
   //   const router = usePathname();
 
@@ -29,7 +29,12 @@ export default function Navbar({
   const buttonsToShow = [...prioritizedButtons, ...otherButtons].slice(0, 5);
 
   return (
-    <nav className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 p-1 bg-black/30 backdrop-blur-lg rounded-full z-50">
+    <nav
+      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 p-1 bg-black/30 backdrop-blur-lg rounded-full z-50"
+      style={{
+        border: `2px solid ${page?.memeColor}`,
+      }}
+    >
       {buttonsToShow.map((button) => (
         <Link
           key={button.key}
