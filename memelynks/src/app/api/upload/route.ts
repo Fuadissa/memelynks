@@ -40,8 +40,6 @@ export async function POST(req: Request) {
       }
     );
 
-    console.log("Cloudinary upload result:", result); // Log the Cloudinary response
-
     // Return the secure URL of the uploaded image
     return new Response(JSON.stringify({ secureUrl: result.secure_url }), {
       status: 200,
