@@ -8,7 +8,6 @@ import { FaLink } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import PlaceholderImage from "@/assets/images/user-profile-icon-avatar-or-person-vector-45089556.jpg";
 
 interface PageSettingsFormProps {
   page: {
@@ -104,10 +103,11 @@ export const DashboardNav = ({ page }: PageSettingsFormProps) => {
                 <div className="flex justify-start items-center gap-3 text-white">
                   <div className="rounded-full overflow-hidden aspect-square w-12">
                     <Image
-                      src={session?.user?.image || PlaceholderImage}
+                      src={session?.user?.image || ""}
                       width={256}
                       height={256}
                       alt="avatar"
+                      loading="lazy"
                     />
                   </div>
                   <div>{session?.user?.name}</div>
@@ -140,10 +140,11 @@ export const DashboardNav = ({ page }: PageSettingsFormProps) => {
           <div className="flex justify-start items-center gap-3 text-white">
             <div className="rounded-full overflow-hidden aspect-square w-12">
               <Image
-                src={session?.user?.image || PlaceholderImage}
+                src={session?.user?.image || ""}
                 width={256}
                 height={256}
                 alt="avatar"
+                loading="lazy"
               />
             </div>
             <div>{session?.user?.name}</div>

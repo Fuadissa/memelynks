@@ -12,7 +12,6 @@ import { savePageSettings } from "@/actions/pageAction";
 import { uploadToCloudinary } from "@/lib/upload";
 import EmbeddedTwitterPost from "@/components/EmbeddedTwitterPost";
 import { useSession } from "next-auth/react";
-import PlaceholderImage from "@/assets/images/user-profile-icon-avatar-or-person-vector-45089556.jpg";
 
 interface PageSettingsFormProps {
   page: {
@@ -190,7 +189,7 @@ export default function PageSettingsForm({ page }: PageSettingsFormProps) {
               <div className="overflow-hidden h-full rounded-full border-4 border-white shadow shadow-black/50">
                 <Image
                   className="w-full h-full object-cover"
-                  src={formData.avatar || session?.user?.image || PlaceholderImage}
+                  src={formData.avatar || ""}
                   alt="avatar"
                   width={128}
                   height={128}
