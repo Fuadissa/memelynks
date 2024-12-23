@@ -11,13 +11,19 @@ const authConfig: NextAuthConfig = {
       session.user.id = token.id as string;
       session.user.provider = token.provider as string;
       session.user.providerId = token.providerId as string;
+      session.user.image = token.image as string;
       return session;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user && account) {
         token.id = user.id as string;
         token.provider = account.provider;
         token.providerId = account.providerAccountId;
+      }
+
+      if (trigger === "update") {
+        token.image = session.image;
+        return { ...token, ...session.user};
       }
       return token;
     },

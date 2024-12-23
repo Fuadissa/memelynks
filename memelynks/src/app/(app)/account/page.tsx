@@ -46,8 +46,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       return (
         <div className="user-account">
           <PageSettingsForm
-            page={leanPage}
-            user={{ ...session.user, image: session.user.image ?? undefined }} // Convert null to undefined
+            page={leanPage} // Convert null to undefined
           />
           <PageButtonsForm page={leanPage} user={session.user} />
           <PageLinksForm page={leanPage} user={session.user} />

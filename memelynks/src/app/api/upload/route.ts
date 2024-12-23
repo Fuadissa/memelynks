@@ -27,8 +27,6 @@ export async function POST(req: Request) {
       });
     }
 
-    console.log("Received file for upload:", file); // Log the incoming file
-
     // Convert the Base64 string back into a file URI
     const base64Data = file.split(",")[1]; // Remove the data URI prefix
     const mimeType = file.split(";")[0].split(":")[1];

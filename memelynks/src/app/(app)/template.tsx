@@ -46,7 +46,7 @@ export default async function AppTemplate({ children }: Props) {
           {/* Mobile navigation toggle */}
           {/* Sidebar */}
 
-          <DashboardNav page={page} session={session} />
+          <DashboardNav page={page} />
 
           {/* Main content */}
           <div className="grow m-1 rounded-md mt-0 bg-neutral-100 col-span-12 lg:col-span-10 md:col-span-9">

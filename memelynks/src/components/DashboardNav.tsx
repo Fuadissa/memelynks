@@ -6,8 +6,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaLink } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
-import { Session } from "next-auth"; // Import the correct session type
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import PlaceholderImage from "@/assets/images/user-profile-icon-avatar-or-person-vector-45089556.jpg";
 
 interface PageSettingsFormProps {
   page: {
@@ -19,10 +20,11 @@ interface PageSettingsFormProps {
     memeMoment: string;
     uri: string;
   };
-  session: Session; // Use the correct session type
+  // Use the correct session type
 }
 
-export const DashboardNav = ({ page, session }: PageSettingsFormProps) => {
+export const DashboardNav = ({ page }: PageSettingsFormProps) => {
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -102,7 +104,7 @@ export const DashboardNav = ({ page, session }: PageSettingsFormProps) => {
                 <div className="flex justify-start items-center gap-3 text-white">
                   <div className="rounded-full overflow-hidden aspect-square w-12">
                     <Image
-                      src={session.user?.image || "/default-avatar.png"}
+                      src={session?.user?.image || PlaceholderImage}
                       width={256}
                       height={256}
                       alt="avatar"
@@ -138,7 +140,7 @@ export const DashboardNav = ({ page, session }: PageSettingsFormProps) => {
           <div className="flex justify-start items-center gap-3 text-white">
             <div className="rounded-full overflow-hidden aspect-square w-12">
               <Image
-                src={session.user?.image || "/default-avatar.png"}
+                src={session?.user?.image || PlaceholderImage}
                 width={256}
                 height={256}
                 alt="avatar"

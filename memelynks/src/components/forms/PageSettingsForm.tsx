@@ -11,6 +11,8 @@ import SubmitButton from "../SubmitButton";
 import { savePageSettings } from "@/actions/pageAction";
 import { uploadToCloudinary } from "@/lib/upload";
 import EmbeddedTwitterPost from "@/components/EmbeddedTwitterPost";
+import { useSession } from "next-auth/react";
+import PlaceholderImage from "@/assets/images/user-profile-icon-avatar-or-person-vector-45089556.jpg";
 
 interface PageSettingsFormProps {
   page: {
@@ -27,15 +29,14 @@ interface PageSettingsFormProps {
   };
 }
 
-export default function PageSettingsForm({
-  page,
-  user,
-}: PageSettingsFormProps) {
+export default function PageSettingsForm({ page }: PageSettingsFormProps) {
+  const { data: session, update } = useSession();
+
   const [formData, setFormData] = useState({
     bgType: page.bgType,
     bgColor: page.bgColor,
     bgImage: page.bgImage,
-    avatar: user?.image || "",
+    avatar: session?.user?.image || "",
     memeName: page.memeName,
     embedded: page.embedded,
     memeMoment: page.memeMoment,
@@ -97,7 +98,20 @@ export default function PageSettingsForm({
 
     try {
       const result = await savePageSettings(formData);
-      if (result) {
+
+      if (result.avatarUrl) {
+        if (session) {
+          session.user.image = result.avatarUrl;
+          console.log("Updating user image:", session.user.image);
+          await update({
+            ...session,
+            user: { ...session.user, image: result.avatarUrl },
+          });
+        }
+      }
+
+      // Ensure session is not null and user exists before updating image
+      if (result.success) {
         toast.success("Settings saved!");
       }
     } catch (error) {
@@ -176,7 +190,7 @@ export default function PageSettingsForm({
               <div className="overflow-hidden h-full rounded-full border-4 border-white shadow shadow-black/50">
                 <Image
                   className="w-full h-full object-cover"
-                  src={formData.avatar || ""}
+                  src={formData.avatar || session?.user?.image || PlaceholderImage}
                   alt="avatar"
                   width={128}
                   height={128}

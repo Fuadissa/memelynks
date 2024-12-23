@@ -2,14 +2,15 @@
 
 import { auth } from "@/auth";
 import { Link } from "@/components/forms/PageLinksForm";
-import client from "@/lib/db";
+import { adapter } from "@/lib/adapter";
 import { Page } from "@/lib/models/PageSchema";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import mongoose from "mongoose";
+
+// sessionTypes.ts
 
 export async function savePageSettings(
   formData: Record<string, string | null>
-): Promise<boolean> {
+): Promise<{ success: boolean; avatarUrl?: string }> {
   try {
     await mongoose.connect(process.env.MONGODB_URI!);
     const session = await auth();
@@ -45,24 +46,31 @@ export async function savePageSettings(
       );
 
       // Handle avatar updates separately
+      let avatarUrl: string | undefined | null; // Allow null as wellF
       if ("avatar" in formData) {
-        const avatarLink = formData.avatar;
-        const adapter = MongoDBAdapter(client);
+        avatarUrl = formData.avatar;
+        const adapterInstance = await adapter();
 
-        if (adapter && typeof adapter.updateUser === "function") {
-          await adapter.updateUser({
-            id: session.user.id,
-            image: avatarLink,
-          });
-        }
+        const user = adapterInstance.updateUser
+          ? await adapterInstance.updateUser({
+              id: session.user.id,
+              image: avatarUrl,
+            })
+          : null;
+
+        console.log(user);
       }
-      return true;
+
+      return {
+        success: true,
+        avatarUrl: avatarUrl ?? undefined, // Return the avatar URL to the frontend
+      };
     }
 
-    return false;
+    return { success: false };
   } catch (error) {
     console.error("Error saving page settings:", error);
-    return false;
+    return { success: false };
   }
 }
 

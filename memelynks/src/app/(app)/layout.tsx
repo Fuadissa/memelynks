@@ -1,3 +1,5 @@
+import { Provider } from "@/layout/Provider";
+
 export const metadata = {
   title: "Dashborad",
   description: "Your Dashboard Page.",
@@ -11,7 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`bg-white`}>
-        {children}
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
