@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MemeRoots",
+  title: "MemeLynks",
   description: "Arrange all your meme's Links in One Place",
 };
 

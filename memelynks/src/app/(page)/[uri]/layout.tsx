@@ -4,7 +4,7 @@ import "../../globals.css";
 const lato = Lato({ subsets: ["latin"], weight: ["400", "700"] });
 
 export const metadata = {
-  title: "Memelynks/",
+  title: "Memelynks",
   description: "Created by MemeLynks",
 };
 export default function RootLayout({

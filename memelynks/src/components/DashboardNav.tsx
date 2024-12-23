@@ -79,7 +79,7 @@ export const DashboardNav = ({ page, session }: PageSettingsFormProps) => {
         </div>
         <div className="flex justify-end items-center h-[90%]">
           <Link
-            href={"/" + page.uri}
+            href={"/" + page?.uri}
             target="_blank"
             className="lg:px-16 px-8 flex justify-center items-center bg-[#ffce7b] rounded-sm h-full text-xl cursor-pointer"
           >
