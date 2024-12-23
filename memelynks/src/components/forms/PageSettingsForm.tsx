@@ -189,7 +189,7 @@ export default function PageSettingsForm({ page }: PageSettingsFormProps) {
               <div className="overflow-hidden h-full rounded-full border-4 border-white shadow shadow-black/50">
                 <Image
                   className="w-full h-full object-cover"
-                  src={formData.avatar || ""}
+                  src={formData.avatar || session?.user?.image || ""}
                   alt="avatar"
                   width={128}
                   height={128}
