@@ -60,17 +60,21 @@ export default function PageSettingsForm({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate the file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload a valid image file.");
       return;
     }
 
+    // Show loading toast
     const loadingToast = toast.loading("Uploading image...");
 
     try {
+      // Call the upload function and update form data
       const uploadedImageUrl = await uploadToCloudinary(file);
-      updateFormData(key, uploadedImageUrl);
+      updateFormData(key, uploadedImageUrl); // Update form data with the uploaded URL
 
+      // Show success toast
       toast.success(
         `${
           key === "bgImage" ? "Background" : "Avatar"
@@ -82,6 +86,7 @@ export default function PageSettingsForm({
         error instanceof Error ? error.message : "Failed to upload image."
       );
     } finally {
+      // Dismiss the loading toast
       toast.dismiss(loadingToast);
     }
   };

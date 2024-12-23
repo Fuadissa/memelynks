@@ -5,15 +5,16 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "",
   api_key: process.env.CLOUDINARY_API_KEY || "",
   api_secret: process.env.CLOUDINARY_API_SECRET || "",
+  secure: true,
 });
 
 // Custom type for Cloudinary upload response
-interface CloudinaryUploadResponse {
-  secure_url: string;
-  public_id: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any; // Allow additional properties if needed
-}
+// interface CloudinaryUploadResponse {
+//   secure_url: string;
+//   public_id: string;
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   [key: string]: any; // Allow additional properties if needed
+// }
 
 export async function POST(req: Request) {
   try {
@@ -28,17 +29,17 @@ export async function POST(req: Request) {
 
     console.log("Received file for upload:", file); // Log the incoming file
 
+    // Convert the Base64 string back into a file URI
+    const base64Data = file.split(",")[1]; // Remove the data URI prefix
+    const mimeType = file.split(";")[0].split(":")[1];
+
+    // Prepare the data URI for Cloudinary upload
+    const fileUri = `data:${mimeType};base64,${base64Data}`;
+
     // Upload the image to Cloudinary
-    const result = await new Promise<CloudinaryUploadResponse>(
-      (resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream({ resource_type: "image" }, (error, result) => {
-            if (error) reject(error);
-            else resolve(result as CloudinaryUploadResponse); // Cast to our defined type
-          })
-          .end(Buffer.from(file, "base64"));
-      }
-    );
+    const result = await cloudinary.uploader.upload(fileUri, {
+      invalidate: true, // Optional: invalidate cached versions of the file
+    });
 
     // Return the secure URL of the uploaded image
     return new Response(JSON.stringify({ secureUrl: result.secure_url }), {

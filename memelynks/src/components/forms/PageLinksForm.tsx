@@ -64,6 +64,7 @@ export default function PageLinksForm({ page, user }: PageLinksFormProps) {
     const file = ev.target.files?.[0];
     if (!file) return;
 
+    // Validate the file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload a valid image file.");
       return;
@@ -88,7 +89,6 @@ export default function PageLinksForm({ page, user }: PageLinksFormProps) {
       })
       .catch((error) => {
         console.error("Error uploading image:", error);
-        // Show error toast
         toast.error(
           error instanceof Error ? error.message : "Failed to upload image."
         );
